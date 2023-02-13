@@ -20,23 +20,22 @@ export default class Gallery extends Component {
 
 	async componentDidUpdate(prevProps, prevState) {
 		if (
-			prevState.query !== this.state.query ||
-			prevState.page !== this.state.page
+			prevState.query !== this.state.query || prevState.page !== this.state.page
 		) {
 			try {
 				const { query, loader, page } = this.state;
-				this.setState({ loader: !loader });
-				await getImage(query, page).then(resp => {
-					if (resp.hits.length) {
-						this.setState(prevState => {
-							return {
-								images: [...prevState.images, ...resp.hits],
-							};
-						});
-					} else {
-						Notify.failure('Error');
-					}
-				});
+				this.setState({ loader: !loader, });
+				const data = await getImage({ q: query, page });
+				if (data.hits.length) {
+					this.setState(prevState => {
+						return {
+							images: [...prevState.images, ...data.hits],
+						};
+					});
+				} else {
+					Notify.failure('Error11');
+				}
+
 			} catch (error) {
 				console.log(error);
 				Notify.failure('Error');
@@ -45,6 +44,7 @@ export default class Gallery extends Component {
 			}
 		}
 	}
+
 	onLoadMoreButton = () => {
 		this.setState(prevState => ({
 			page: prevState.page + 1,
